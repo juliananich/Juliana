@@ -6,19 +6,18 @@ app = Flask(__name__)
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Health check endpoint for container orchestration probes."""
+    """Health check endpoint for container probes."""
     return jsonify({"status": "healthy"}), 200
 
 @app.route('/hello', methods=['GET'])
 def hello():
-    """A simple greeting endpoint demonstrating input sanitization."""
+    """Greeting endpoint demonstrating input sanitization."""
     name = request.args.get('name', 'World')
     # Sanitize input to prevent injection attacks
     safe_name = escape(name)
     return jsonify({"message": f"Hello, {safe_name}!"}), 200
 
 if __name__ == '__main__':
-    # Never run in debug mode in production. 
-    # Bind to 0.0.0.0 to work properly inside a Docker container.
+    # Bind to 0.0.0.0 for Docker, and strictly disable debug mode for production
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port, debug=False)  # nosec B104
+    app.run(host='0.0.0.0', port=port, debug=False)
